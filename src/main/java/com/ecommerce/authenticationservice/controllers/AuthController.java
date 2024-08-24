@@ -73,7 +73,7 @@ public class AuthController {
     }
 
     @GetMapping("logout")
-    public ResponseEntity<String> logout(@RequestHeader("AUTH_TOKEN") String extractedJWT){
+    public ResponseEntity<String> logout(@RequestHeader("AUTH_TOKEN") String extractedJWT) throws InvalidTokenException, TokenExpiredException, UserAlreadyLoggedOutException {
         if(authService.logout(extractedJWT)){
             return new ResponseEntity<>("Logged out",HttpStatus.OK);
         }

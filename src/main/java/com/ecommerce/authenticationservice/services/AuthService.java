@@ -74,9 +74,7 @@ public class AuthService {
     public boolean validate(String jwtoken) throws InvalidTokenException, TokenExpiredException, UserAlreadyLoggedOutException {
         try {
             Jws<Claims> claims = getClaimsJws(jwtoken);
-            System.out.println(jwtoken);
             Long userId = claims.getPayload().get("user-id",Long.class);
-            System.out.println(userId);
             String email = claims.getPayload().get("email",String.class);
 //            Session currentSession = sessionRepository.findByUser_Id(userId);
             Session currentSession = sessionRepository.findByToken(jwtoken);
@@ -104,7 +102,8 @@ public class AuthService {
         }
     }
 
-    public boolean logout(String jwtoken){
+    public boolean logout(String jwtoken) throws InvalidTokenException, TokenExpiredException, UserAlreadyLoggedOutException {
+        if(validate(jwtoken)){
         Jws<Claims> claims = getClaimsJws(jwtoken);
         Long userId = claims.getPayload().get("user-id",Long.class);
 
@@ -112,6 +111,8 @@ public class AuthService {
         currentSession.setSessionStatus(SessionStatus.ENDED);
         sessionRepository.save(currentSession);
         return true;
+        }
+        return false;
     }
 
     private String createJWT(Long id, Set<Role> roles, String email) {
